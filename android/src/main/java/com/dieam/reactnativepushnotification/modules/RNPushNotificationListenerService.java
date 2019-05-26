@@ -118,21 +118,25 @@ public class RNPushNotificationListenerService extends FirebaseMessagingService 
 
         Boolean isForeground = isApplicationInForeground();
 
-        RNPushNotificationJsDelivery jsDelivery = new RNPushNotificationJsDelivery(context);
-        bundle.putBoolean("foreground", isForeground);
-        bundle.putBoolean("userInteraction", false);
-        jsDelivery.notifyNotification(bundle);
+        //we don't want to notify user when the app is in foreground
+        if (!isForeground) {
+            RNPushNotificationJsDelivery jsDelivery = new RNPushNotificationJsDelivery(context);
+            bundle.putBoolean("foreground", isForeground);
+            bundle.putBoolean("userInteraction", false);
+            jsDelivery.notifyNotification(bundle);
 
-        // If contentAvailable is set to true, then send out a remote fetch event
-        if (bundle.getString("contentAvailable", "false").equalsIgnoreCase("true")) {
-            jsDelivery.notifyRemoteFetch(bundle);
+            // If contentAvailable is set to true, then send out a remote fetch event
+            if (bundle.getString("contentAvailable", "false").equalsIgnoreCase("true")) {
+                jsDelivery.notifyRemoteFetch(bundle);
+            }
+
+            Log.v(LOG_TAG, "sendNotification: " + bundle);
+
+            Application applicationContext = (Application) context.getApplicationContext();
+            RNPushNotificationHelper pushNotificationHelper = new RNPushNotificationHelper(applicationContext);
+            pushNotificationHelper.sendToNotificationCentre(bundle);
         }
-
-        Log.v(LOG_TAG, "sendNotification: " + bundle);
-
-        Application applicationContext = (Application) context.getApplicationContext();
-        RNPushNotificationHelper pushNotificationHelper = new RNPushNotificationHelper(applicationContext);
-        pushNotificationHelper.sendToNotificationCentre(bundle);
+        
     }
 
     private boolean isApplicationInForeground() {

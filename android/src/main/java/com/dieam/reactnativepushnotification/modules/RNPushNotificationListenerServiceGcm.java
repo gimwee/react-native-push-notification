@@ -99,7 +99,7 @@ public class RNPushNotificationListenerServiceGcm extends GcmListenerService {
         }
 
         Boolean isForeground = isApplicationInForeground();
-
+        
         RNPushNotificationJsDelivery jsDelivery = new RNPushNotificationJsDelivery(context);
         bundle.putBoolean("foreground", isForeground);
         bundle.putBoolean("userInteraction", false);
